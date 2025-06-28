@@ -48,7 +48,7 @@
       </Frame>
       <CheckButton name="MyLFGTankCheck" inherits="UICheckButtonTemplate" text="Tank">
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="MyLFGSuffixDropdown" relativePoint="BOTTOMLEFT" x="16" y="-20"/>
+          <Anchor point="TOPRIGHT" relativeTo="MyLFGChannelDropdown" relativePoint="TOPLEFT" x="-10" y="0"/>
         </Anchors>
       </CheckButton>
       <CheckButton name="MyLFGHealerCheck" inherits="UICheckButtonTemplate" text="Healer">

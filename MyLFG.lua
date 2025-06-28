@@ -60,12 +60,21 @@ function MyLFG_OnLoad()
 
   UIDropDownMenu_Initialize(MyLFGChannelDropdown, MyLFG_ChannelDropdown_Initialize)
   UIDropDownMenu_SetSelectedName(MyLFGChannelDropdown, MyLFG.selectedChannel)
+  if UIDropDownMenu_SetText then
+    UIDropDownMenu_SetText(MyLFGChannelDropdown, MyLFG.selectedChannel)
+  end
 
   UIDropDownMenu_Initialize(MyLFGPrefixDropdown, MyLFG_PrefixDropdown_Initialize)
   UIDropDownMenu_SetSelectedID(MyLFGPrefixDropdown, 1)
+  if UIDropDownMenu_SetText then
+    UIDropDownMenu_SetText(MyLFGPrefixDropdown, MyLFG.prefix)
+  end
 
   UIDropDownMenu_Initialize(MyLFGSuffixDropdown, MyLFG_SuffixDropdown_Initialize)
   UIDropDownMenu_SetSelectedID(MyLFGSuffixDropdown, 1)
+  if UIDropDownMenu_SetText then
+    UIDropDownMenu_SetText(MyLFGSuffixDropdown, MyLFG.suffix)
+  end
 
   -- initialise role checkboxes as unchecked
   MyLFGTankCheck:SetChecked(false)
@@ -152,6 +161,9 @@ end
 function MyLFG_ChannelDropdown_OnClick(self)
   if not self then return end
   UIDropDownMenu_SetSelectedName(MyLFGChannelDropdown, self.value)
+  if UIDropDownMenu_SetText then
+    UIDropDownMenu_SetText(MyLFGChannelDropdown, self.value)
+  end
   MyLFG.channel = self.value
   MyLFG.selectedChannel = self.value
 end
@@ -172,6 +184,9 @@ end
 function MyLFG_PrefixDropdown_OnClick(self)
   if not self then return end
   UIDropDownMenu_SetSelectedName(MyLFGPrefixDropdown, self.value)
+  if UIDropDownMenu_SetText then
+    UIDropDownMenu_SetText(MyLFGPrefixDropdown, self.value)
+  end
   MyLFG.prefix = self.value
 end
 
@@ -189,6 +204,9 @@ end
 function MyLFG_SuffixDropdown_OnClick(self)
   if not self then return end
   UIDropDownMenu_SetSelectedName(MyLFGSuffixDropdown, self.value)
+  if UIDropDownMenu_SetText then
+    UIDropDownMenu_SetText(MyLFGSuffixDropdown, self.value)
+  end
   MyLFG.suffix = self.value
 end
 
