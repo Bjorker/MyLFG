@@ -84,9 +84,17 @@ function MyLFG_OnLoad()
   MyLFGStartButton:SetScript("OnClick", MyLFG_Toggle)
   MyLFGAnnounceButton:SetScript("OnClick", MyLFG_SendAnnouncement)
 
-  -- hide unused buttons if present
-  if MyLFGLeftButton then MyLFGLeftButton:Hide() end
-  if MyLFGRightButton then MyLFGRightButton:Hide() end
+  -- anchor arrow buttons next to the channel dropdown
+  if MyLFGArrowFrame then
+    MyLFGArrowFrame:ClearAllPoints()
+    MyLFGArrowFrame:SetPoint("LEFT", MyLFGChannelDropdown, "RIGHT", 5, 0)
+    if MyLFGLeftButton then
+      MyLFGLeftButton:SetScript("OnClick", function() SelectChannelByOffset(-1) end)
+    end
+    if MyLFGRightButton then
+      MyLFGRightButton:SetScript("OnClick", function() SelectChannelByOffset(1) end)
+    end
+  end
 
   SLASH_MYLFG1 = "/mylfg"
   SlashCmdList["MYLFG"] = function()
@@ -157,9 +165,11 @@ function MyLFG_ChannelDropdown_OnClick(self)
 end
 
 function MyLFG_ChannelDropdown_Initialize()
+  MyLFG.channels = {}
   for i = 1, 10 do
     local id, name = GetChannelName(i)
     if id and id > 0 and name then
+      table.insert(MyLFG.channels, name)
       local info = UIDropDownMenu_CreateInfo()
       info.text = name
       info.value = name
@@ -201,6 +211,27 @@ function MyLFG_SuffixDropdown_Initialize()
     info.func = MyLFG_SuffixDropdown_OnClick
     UIDropDownMenu_AddButton(info)
   end
+end
+
+-- cycle through available channel options using the arrow buttons
+local function ChannelIndex(name)
+  if not MyLFG.channels then return nil end
+  for i, n in ipairs(MyLFG.channels) do
+    if n == name then return i end
+  end
+  return nil
+end
+
+local function SelectChannelByOffset(offset)
+  if not MyLFG.channels or #MyLFG.channels == 0 then return end
+  local idx = ChannelIndex(MyLFG.selectedChannel) or 1
+  local newIdx = idx + offset
+  if newIdx < 1 then newIdx = #MyLFG.channels end
+  if newIdx > #MyLFG.channels then newIdx = 1 end
+  local name = MyLFG.channels[newIdx]
+  MyLFG.selectedChannel = name
+  MyLFG.channel = name
+  UIDropDownMenu_SetSelectedName(MyLFGChannelDropdown, name)
 end
 
 local function GetNeeds()
