@@ -1,5 +1,16 @@
 MyLFG = {}
 
+--[[
+  TurtleWoW does not always include the standard UIDropDownMenu
+  helper function.  Add a small fallback to avoid a nil error when
+  the dropdowns are initialised.
+]]
+if UIDropDownMenu_CreateInfo == nil then
+  function UIDropDownMenu_CreateInfo()
+    return {}
+  end
+end
+
 function MyLFG_OnLoad()
   MyLFG.prefix = "-->"
   MyLFG.suffix = "<--"
