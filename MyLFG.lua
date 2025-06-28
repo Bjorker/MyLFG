@@ -19,6 +19,20 @@ function MyLFG_OnLoad()
   MyLFG.isActive = false
   MyLFG.timer = 0
 
+  -- ensure the frame has a backdrop in case the template fails
+  if MyLFGFrame.SetBackdrop then
+    MyLFGFrame:SetBackdrop({
+      bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+      edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+      tile = true,
+      tileSize = 32,
+      edgeSize = 32,
+      insets = { left = 11, right = 12, top = 12, bottom = 11 }
+    })
+    MyLFGFrame:SetBackdropColor(0, 0, 0, 0.75)
+    MyLFGFrame:SetBackdropBorderColor(1, 1, 1, 1)
+  end
+
   MyLFGMessageBox:SetText("DM:W")
 
   MyLFGIntervalSlider:SetMinMaxValues(1, 30)
@@ -44,6 +58,13 @@ function MyLFG_OnLoad()
   MyLFGDps1Check:SetChecked(false)
   MyLFGDps2Check:SetChecked(false)
   MyLFGDps3Check:SetChecked(false)
+
+  -- label the role checkboxes
+  if MyLFGTankCheckText then MyLFGTankCheckText:SetText("Tank") end
+  if MyLFGHealerCheckText then MyLFGHealerCheckText:SetText("Healer") end
+  if MyLFGDps1CheckText then MyLFGDps1CheckText:SetText("DPS 1") end
+  if MyLFGDps2CheckText then MyLFGDps2CheckText:SetText("DPS 2") end
+  if MyLFGDps3CheckText then MyLFGDps3CheckText:SetText("DPS 3") end
 
   MyLFGStartButton:SetScript("OnClick", MyLFG_Toggle)
   MyLFGAnnounceButton:SetScript("OnClick", MyLFG_SendAnnouncement)
@@ -106,14 +127,16 @@ function MyLFG_ChannelDropdown_OnClick(self)
 end
 
 function MyLFG_ChannelDropdown_Initialize()
-  local info = UIDropDownMenu_CreateInfo()
-  info.func = MyLFG_ChannelDropdown_OnClick
-
-  info.text = "world"; info.value = "world"; UIDropDownMenu_AddButton(info)
-  info = UIDropDownMenu_CreateInfo(); info.func = MyLFG_ChannelDropdown_OnClick
-  info.text = "LookingForGroup"; info.value = "LookingForGroup"; UIDropDownMenu_AddButton(info)
-  info = UIDropDownMenu_CreateInfo(); info.func = MyLFG_ChannelDropdown_OnClick
-  info.text = "Custom"; info.value = "Custom"; UIDropDownMenu_AddButton(info)
+  for i = 1, 10 do
+    local id, name = GetChannelName(i)
+    if id and id > 0 and name then
+      local info = UIDropDownMenu_CreateInfo()
+      info.text = name
+      info.value = name
+      info.func = MyLFG_ChannelDropdown_OnClick
+      UIDropDownMenu_AddButton(info)
+    end
+  end
 end
 
 function MyLFG_PrefixDropdown_OnClick(self)
