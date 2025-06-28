@@ -11,7 +11,13 @@ if UIDropDownMenu_CreateInfo == nil then
   end
 end
 
-function MyLFG_OnLoad()
+function MyLFG_OnLoad(self)
+  -- defer full UI setup until the player has loaded
+  self:RegisterEvent("PLAYER_LOGIN")
+  self:SetScript("OnEvent", MyLFG_OnEvent)
+end
+
+function MyLFG_InitUI()
   MyLFG.prefix = "-->"
   MyLFG.suffix = "<--"
   MyLFG.interval = 5
@@ -31,7 +37,7 @@ function MyLFG_OnLoad()
       insets = { left = 11, right = 12, top = 12, bottom = 11 }
     })
     MyLFGFrame:SetBackdropColor(0, 0, 0, 0.75)
-    MyLFGFrame:SetBackdropBorderColor(1, 1, 1, 1)
+  MyLFGFrame:SetBackdropBorderColor(1, 1, 1, 1)
   end
 
   MyLFGMessageBox:SetText("DM:W")
@@ -115,6 +121,13 @@ function MyLFG_OnLoad()
       MyLFG.dynamicFrames = {}
     end
   end)
+end
+
+function MyLFG_OnEvent(self, event, ...)
+  if event == "PLAYER_LOGIN" then
+    self:UnregisterEvent("PLAYER_LOGIN")
+    MyLFG_InitUI()
+  end
 end
 
 function MyLFG_UpdateButton()
