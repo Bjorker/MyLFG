@@ -10,10 +10,16 @@ if not UIDropDownMenu_CreateInfo then
   end
 end
 
-function MyLFG_OnLoad(self)
-  -- Defer setup completo fino al login del giocatore
-  self:RegisterEvent("PLAYER_LOGIN")
-  self:SetScript("OnEvent", MyLFG_OnEvent)
+function MyLFG_OnLoad()
+  MyLFGFrame:RegisterEvent("PLAYER_LOGIN")
+  MyLFGFrame:SetScript("OnEvent", MyLFG_OnEvent)
+end
+
+function MyLFG_OnEvent(self, event, ...)
+  if event == "PLAYER_LOGIN" then
+    MyLFGFrame:UnregisterEvent("PLAYER_LOGIN")
+    MyLFG_InitUI()
+  end
 end
 
 function MyLFG_InitUI()
@@ -25,7 +31,7 @@ function MyLFG_InitUI()
   MyLFG.isActive = false
   MyLFG.timer = 0
 
-  -- Assicuriamoci che il frame abbia un backdrop
+  -- Backdrop del frame
   if MyLFGFrame.SetBackdrop then
     MyLFGFrame:SetBackdrop({
       bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -41,7 +47,7 @@ function MyLFG_InitUI()
 
   MyLFGMessageBox:SetText("DM:W")
 
-  -- Posizionamento dei dropdown
+  -- Posizionamento dropdown
   MyLFGChannelDropdown:ClearAllPoints()
   MyLFGChannelDropdown:SetPoint("TOP", MyLFGMessageBox, "BOTTOM", 0, -10)
   MyLFGPrefixDropdown:ClearAllPoints()
@@ -49,7 +55,7 @@ function MyLFG_InitUI()
   MyLFGSuffixDropdown:ClearAllPoints()
   MyLFGSuffixDropdown:SetPoint("TOP", MyLFGPrefixDropdown, "BOTTOM", 0, -10)
 
-  -- Slider per l'intervallo
+  -- Slider intervallo
   MyLFGIntervalSlider:SetMinMaxValues(1, 30)
   MyLFGIntervalSlider:SetValueStep(1)
   MyLFGIntervalSlider:SetValue(MyLFG.interval)
@@ -58,26 +64,25 @@ function MyLFG_InitUI()
     MyLFGIntervalText:SetText("Interval: " .. value .. " min")
   end)
 
-  -- Inizializzazione dei dropdown
+  -- Dropdown inizializzazione
   UIDropDownMenu_Initialize(MyLFGChannelDropdown, MyLFG_ChannelDropdown_Initialize)
   UIDropDownMenu_Initialize(MyLFGPrefixDropdown, MyLFG_PrefixDropdown_Initialize)
   UIDropDownMenu_Initialize(MyLFGSuffixDropdown, MyLFG_SuffixDropdown_Initialize)
 
-  -- Checkbox per i ruoli
+  -- Checkbox
   MyLFGTankCheck:SetChecked(false)
   MyLFGHealerCheck:SetChecked(false)
   MyLFGDps1Check:SetChecked(false)
   MyLFGDps2Check:SetChecked(false)
   MyLFGDps3Check:SetChecked(false)
 
-  -- Etichette per i checkbox
   if MyLFGTankCheckText then MyLFGTankCheckText:SetText("Tank") end
   if MyLFGHealerCheckText then MyLFGHealerCheckText:SetText("Healer") end
   if MyLFGDps1CheckText then MyLFGDps1CheckText:SetText("DPS 1") end
   if MyLFGDps2CheckText then MyLFGDps2CheckText:SetText("DPS 2") end
   if MyLFGDps3CheckText then MyLFGDps3CheckText:SetText("DPS 3") end
 
-  -- Pulsanti principali
+  -- Pulsanti
   MyLFGStartButton:SetScript("OnClick", MyLFG_Toggle)
   MyLFGAnnounceButton:SetScript("OnClick", MyLFG_SendAnnouncement)
 
@@ -153,13 +158,6 @@ function MyLFG_SuffixDropdown_Initialize()
   end
 end
 
-function MyLFG_OnEvent(self, event, ...)
-  if event == "PLAYER_LOGIN" then
-    self:UnregisterEvent("PLAYER_LOGIN")
-    MyLFG_InitUI()
-  end
-end
-
 function MyLFG_UpdateButton()
   if MyLFG.isActive then
     MyLFGStartButton:SetText("Stop")
@@ -201,35 +199,16 @@ function MyLFG_Toggle()
   end
 end
 
-function MyLFG_ChannelDropdown_OnClick(self)
-  if not self then return end
-  UIDropDownMenu_SetSelectedName(MyLFGChannelDropdown, self.value)
-  if UIDropDownMenu_SetText then
-    UIDropDownMenu_SetText(MyLFGChannelDropdown, self.value)
-  end
-  MyLFG.channel = self.value
-  MyLFG.selectedChannel = self.value
-end
-
 local function GetNeeds()
   local needs = {}
   local dpsNeeded = 0
 
-  if MyLFGTankCheck:GetChecked() then
-    table.insert(needs, "need TANK")
-  end
-
-  if MyLFGHealerCheck:GetChecked() then
-    table.insert(needs, "need HEALER")
-  end
-
+  if MyLFGTankCheck:GetChecked() then table.insert(needs, "need TANK") end
+  if MyLFGHealerCheck:GetChecked() then table.insert(needs, "need HEALER") end
   if MyLFGDps1Check:GetChecked() then dpsNeeded = dpsNeeded + 1 end
   if MyLFGDps2Check:GetChecked() then dpsNeeded = dpsNeeded + 1 end
   if MyLFGDps3Check:GetChecked() then dpsNeeded = dpsNeeded + 1 end
-
-  if dpsNeeded > 0 then
-    table.insert(needs, "need " .. dpsNeeded .. " DPS")
-  end
+  if dpsNeeded > 0 then table.insert(needs, "need " .. dpsNeeded .. " DPS") end
 
   return table.concat(needs, " ")
 end
@@ -245,11 +224,8 @@ function MyLFG_SendAnnouncement()
   end
 
   local lf = "LFM"
-  if members == 4 then
-    lf = "LF1M"
-  elseif members >= 2 and members <= 3 then
-    lf = "LF3M"
-  end
+  if members == 4 then lf = "LF1M"
+  elseif members >= 2 then lf = "LF3M" end
 
   local needs = GetNeeds()
   local finalMsg = MyLFG.prefix.." "..lf.." "..base.." "..needs.." "..MyLFG.suffix
@@ -262,3 +238,6 @@ function MyLFG_SendAnnouncement()
     DEFAULT_CHAT_FRAME:AddMessage("MyLFG: Channel not found")
   end
 end
+
+-- Importante: chiama questa funzione all'avvio, ad esempio a fondo file o da XML
+MyLFG_OnLoad()
