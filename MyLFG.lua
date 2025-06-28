@@ -31,20 +31,7 @@ function MyLFG_InitUI()
   MyLFG.isActive = false
   MyLFG.timer = 0
 
-  -- Backdrop del frame
-  if MyLFGFrame.SetBackdrop then
-    MyLFGFrame:SetBackdrop({
-      bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-      edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-      tile = true,
-      tileSize = 32,
-      edgeSize = 32,
-      insets = { left = 11, right = 12, top = 12, bottom = 11 }
-    })
-    MyLFGFrame:SetBackdropColor(0, 0, 0, 0.75)
-    MyLFGFrame:SetBackdropBorderColor(1, 1, 1, 1)
-  end
-
+  -- Set testo iniziale
   MyLFGMessageBox:SetText("DM:W")
 
   -- Posizionamento dropdown
@@ -55,7 +42,7 @@ function MyLFG_InitUI()
   MyLFGSuffixDropdown:ClearAllPoints()
   MyLFGSuffixDropdown:SetPoint("TOP", MyLFGPrefixDropdown, "BOTTOM", 0, -10)
 
-  -- Slider intervallo
+  -- Slider
   MyLFGIntervalSlider:SetMinMaxValues(1, 30)
   MyLFGIntervalSlider:SetValueStep(1)
   MyLFGIntervalSlider:SetValue(MyLFG.interval)
@@ -64,7 +51,7 @@ function MyLFG_InitUI()
     MyLFGIntervalText:SetText("Interval: " .. value .. " min")
   end)
 
-  -- Dropdown inizializzazione
+  -- Dropdown init
   UIDropDownMenu_Initialize(MyLFGChannelDropdown, MyLFG_ChannelDropdown_Initialize)
   UIDropDownMenu_Initialize(MyLFGPrefixDropdown, MyLFG_PrefixDropdown_Initialize)
   UIDropDownMenu_Initialize(MyLFGSuffixDropdown, MyLFG_SuffixDropdown_Initialize)
@@ -86,7 +73,7 @@ function MyLFG_InitUI()
   MyLFGStartButton:SetScript("OnClick", MyLFG_Toggle)
   MyLFGAnnounceButton:SetScript("OnClick", MyLFG_SendAnnouncement)
 
-  -- Comando slash
+  -- Slash command
   SLASH_MYLFG1 = "/mylfg"
   SlashCmdList["MYLFG"] = function()
     if MyLFGFrame:IsShown() then
@@ -238,6 +225,3 @@ function MyLFG_SendAnnouncement()
     DEFAULT_CHAT_FRAME:AddMessage("MyLFG: Channel not found")
   end
 end
-
--- Importante: chiama questa funzione all'avvio, ad esempio a fondo file o da XML
-MyLFG_OnLoad()
