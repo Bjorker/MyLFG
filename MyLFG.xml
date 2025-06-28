@@ -86,7 +86,7 @@
       </Button>
     </Frames>
     <Scripts>
-      <OnLoad>MyLFG_OnLoad()</OnLoad>
+      <OnLoad>MyLFG_OnLoad(self)</OnLoad>
     </Scripts>
   </Frame>
 </Ui>
