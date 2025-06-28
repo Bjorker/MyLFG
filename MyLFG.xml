@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-  <Frame name="MyLFGFrame" hidden="true" parent="UIParent">
+  <Frame name="MyLFGFrame" hidden="true" parent="UIParent" inherits="BackdropTemplate">
     <Size><AbsDimension x="320" y="260"/></Size>
     <Anchors>
       <Anchor point="CENTER"/>
@@ -9,6 +9,8 @@
       <TileSize><AbsValue val="32"/></TileSize>
       <EdgeSize><AbsValue val="32"/></EdgeSize>
     </Backdrop>
+    <BackdropColor r="0" g="0" b="0" a="0.75"/>
+    <BackdropBorderColor r="1" g="1" b="1" a="1"/>
     <Frames>
       <EditBox name="MyLFGMessageBox" autoFocus="false" inherits="InputBoxTemplate">
         <Size><AbsDimension x="200" y="20"/></Size>
@@ -30,6 +32,31 @@
       <Frame name="MyLFGSuffixDropdown" inherits="UIDropDownMenuTemplate">
         <Anchors><Anchor point="TOP" relativeTo="MyLFGPrefixDropdown" relativePoint="BOTTOM" x="0" y="-20"/></Anchors>
       </Frame>
+      <CheckButton name="MyLFGTankCheck" inherits="UICheckButtonTemplate" text="Tank">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="MyLFGSuffixDropdown" relativePoint="BOTTOMLEFT" x="16" y="-20"/>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="MyLFGHealerCheck" inherits="UICheckButtonTemplate" text="Healer">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="MyLFGTankCheck" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="MyLFGDps1Check" inherits="UICheckButtonTemplate" text="DPS 1">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="MyLFGHealerCheck" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="MyLFGDps2Check" inherits="UICheckButtonTemplate" text="DPS 2">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="MyLFGDps1Check" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="MyLFGDps3Check" inherits="UICheckButtonTemplate" text="DPS 3">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="MyLFGDps2Check" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+        </Anchors>
+      </CheckButton>
       <Button name="MyLFGStartButton" inherits="UIPanelButtonTemplate" text="Start">
         <Size><AbsDimension x="80" y="22"/></Size>
         <Anchors><Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent" x="20" y="20"/></Anchors>
@@ -37,6 +64,11 @@
       <Button name="MyLFGAnnounceButton" inherits="UIPanelButtonTemplate" text="Announce Now">
         <Size><AbsDimension x="110" y="22"/></Size>
         <Anchors><Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent" x="-20" y="20"/></Anchors>
+      </Button>
+      <Button name="MyLFGCloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent" x="-5" y="-5"/>
+        </Anchors>
       </Button>
     </Frames>
     <Scripts>
