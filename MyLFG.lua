@@ -38,6 +38,13 @@ function MyLFG_OnLoad()
   UIDropDownMenu_Initialize(MyLFGSuffixDropdown, MyLFG_SuffixDropdown_Initialize)
   UIDropDownMenu_SetSelectedID(MyLFGSuffixDropdown, 1)
 
+  -- initialise role checkboxes as unchecked
+  MyLFGTankCheck:SetChecked(false)
+  MyLFGHealerCheck:SetChecked(false)
+  MyLFGDps1Check:SetChecked(false)
+  MyLFGDps2Check:SetChecked(false)
+  MyLFGDps3Check:SetChecked(false)
+
   MyLFGStartButton:SetScript("OnClick", MyLFG_Toggle)
   MyLFGAnnounceButton:SetScript("OnClick", MyLFG_SendAnnouncement)
 
@@ -93,6 +100,7 @@ function MyLFG_Toggle()
 end
 
 function MyLFG_ChannelDropdown_OnClick(self)
+  if not self then return end
   UIDropDownMenu_SetSelectedID(MyLFGChannelDropdown, self:GetID())
   MyLFG.channel = self.value
 end
@@ -109,6 +117,7 @@ function MyLFG_ChannelDropdown_Initialize()
 end
 
 function MyLFG_PrefixDropdown_OnClick(self)
+  if not self then return end
   UIDropDownMenu_SetSelectedID(MyLFGPrefixDropdown, self:GetID())
   MyLFG.prefix = self.value
 end
@@ -125,6 +134,7 @@ function MyLFG_PrefixDropdown_Initialize()
 end
 
 function MyLFG_SuffixDropdown_OnClick(self)
+  if not self then return end
   UIDropDownMenu_SetSelectedID(MyLFGSuffixDropdown, self:GetID())
   MyLFG.suffix = self.value
 end
@@ -141,33 +151,24 @@ function MyLFG_SuffixDropdown_Initialize()
 end
 
 local function GetNeeds()
-  local hasWarrior = false
-  local hasHealer = false
-  local dps = 0
-
-  local function check(unit)
-    if not UnitExists(unit) then return end
-    local class = UnitClass(unit)
-    if class == "Warrior" then
-      hasWarrior = true
-      dps = dps + 1
-    elseif class == "Priest" or class == "Druid" or class == "Paladin" then
-      hasHealer = true
-      dps = dps + 1
-    else
-      dps = dps + 1
-    end
-  end
-
-  check("player")
-  for i=1, GetNumPartyMembers() do
-    check("party"..i)
-  end
-
   local needs = {}
-  if not hasWarrior then table.insert(needs, "need TANK") end
-  if not hasHealer then table.insert(needs, "need HEALER") end
-  if dps < 3 then table.insert(needs, "need DPS") end
+  local dpsNeeded = 0
+
+  if MyLFGTankCheck:GetChecked() then
+    table.insert(needs, "need TANK")
+  end
+
+  if MyLFGHealerCheck:GetChecked() then
+    table.insert(needs, "need HEALER")
+  end
+
+  if MyLFGDps1Check:GetChecked() then dpsNeeded = dpsNeeded + 1 end
+  if MyLFGDps2Check:GetChecked() then dpsNeeded = dpsNeeded + 1 end
+  if MyLFGDps3Check:GetChecked() then dpsNeeded = dpsNeeded + 1 end
+
+  if dpsNeeded > 0 then
+    table.insert(needs, "need " .. dpsNeeded .. " DPS")
+  end
 
   return table.concat(needs, " ")
 end
