@@ -1,18 +1,17 @@
 MyLFG = {}
 
---[[
-  TurtleWoW does not always include the standard UIDropDownMenu
-  helper function.  Add a small fallback to avoid a nil error when
-  the dropdowns are initialised.
+--[[ 
+  TurtleWoW (WoW 1.12) non include alcune funzioni moderne.
+  Aggiungiamo fallback per evitare errori.
 ]]
-if UIDropDownMenu_CreateInfo == nil then
+if not UIDropDownMenu_CreateInfo then
   function UIDropDownMenu_CreateInfo()
     return {}
   end
 end
 
 function MyLFG_OnLoad(self)
-  -- defer full UI setup until the player has loaded
+  -- Defer setup completo fino al login del giocatore
   self:RegisterEvent("PLAYER_LOGIN")
   self:SetScript("OnEvent", MyLFG_OnEvent)
 end
@@ -26,7 +25,7 @@ function MyLFG_InitUI()
   MyLFG.isActive = false
   MyLFG.timer = 0
 
-  -- ensure the frame has a backdrop in case the template fails
+  -- Assicuriamoci che il frame abbia un backdrop
   if MyLFGFrame.SetBackdrop then
     MyLFGFrame:SetBackdrop({
       bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -37,12 +36,12 @@ function MyLFG_InitUI()
       insets = { left = 11, right = 12, top = 12, bottom = 11 }
     })
     MyLFGFrame:SetBackdropColor(0, 0, 0, 0.75)
-  MyLFGFrame:SetBackdropBorderColor(1, 1, 1, 1)
+    MyLFGFrame:SetBackdropBorderColor(1, 1, 1, 1)
   end
 
   MyLFGMessageBox:SetText("DM:W")
 
-  -- anchor dropdowns below the input box
+  -- Posizionamento dei dropdown
   MyLFGChannelDropdown:ClearAllPoints()
   MyLFGChannelDropdown:SetPoint("TOP", MyLFGMessageBox, "BOTTOM", 0, -10)
   MyLFGPrefixDropdown:ClearAllPoints()
@@ -50,59 +49,39 @@ function MyLFG_InitUI()
   MyLFGSuffixDropdown:ClearAllPoints()
   MyLFGSuffixDropdown:SetPoint("TOP", MyLFGPrefixDropdown, "BOTTOM", 0, -10)
 
-  -- center main buttons
-  MyLFGStartButton:ClearAllPoints()
-  MyLFGStartButton:SetPoint("BOTTOM", MyLFGFrame, "BOTTOM", -60, 20)
-  MyLFGAnnounceButton:ClearAllPoints()
-  MyLFGAnnounceButton:SetPoint("BOTTOM", MyLFGFrame, "BOTTOM", 60, 20)
-
+  -- Slider per l'intervallo
   MyLFGIntervalSlider:SetMinMaxValues(1, 30)
   MyLFGIntervalSlider:SetValueStep(1)
   MyLFGIntervalSlider:SetValue(MyLFG.interval)
   MyLFGIntervalSlider:SetScript("OnValueChanged", function(self, value)
     MyLFG.interval = value
-    MyLFGIntervalText:SetText("Interval: "..value.." min")
+    MyLFGIntervalText:SetText("Interval: " .. value .. " min")
   end)
 
+  -- Inizializzazione dei dropdown
   UIDropDownMenu_Initialize(MyLFGChannelDropdown, MyLFG_ChannelDropdown_Initialize)
-  UIDropDownMenu_SetSelectedName(MyLFGChannelDropdown, MyLFG.selectedChannel)
-  if UIDropDownMenu_SetText then
-    UIDropDownMenu_SetText(MyLFGChannelDropdown, MyLFG.selectedChannel)
-  end
-
   UIDropDownMenu_Initialize(MyLFGPrefixDropdown, MyLFG_PrefixDropdown_Initialize)
-  UIDropDownMenu_SetSelectedID(MyLFGPrefixDropdown, 1)
-  if UIDropDownMenu_SetText then
-    UIDropDownMenu_SetText(MyLFGPrefixDropdown, MyLFG.prefix)
-  end
-
   UIDropDownMenu_Initialize(MyLFGSuffixDropdown, MyLFG_SuffixDropdown_Initialize)
-  UIDropDownMenu_SetSelectedID(MyLFGSuffixDropdown, 1)
-  if UIDropDownMenu_SetText then
-    UIDropDownMenu_SetText(MyLFGSuffixDropdown, MyLFG.suffix)
-  end
 
-  -- initialise role checkboxes as unchecked
+  -- Checkbox per i ruoli
   MyLFGTankCheck:SetChecked(false)
   MyLFGHealerCheck:SetChecked(false)
   MyLFGDps1Check:SetChecked(false)
   MyLFGDps2Check:SetChecked(false)
   MyLFGDps3Check:SetChecked(false)
 
-  -- label the role checkboxes
+  -- Etichette per i checkbox
   if MyLFGTankCheckText then MyLFGTankCheckText:SetText("Tank") end
   if MyLFGHealerCheckText then MyLFGHealerCheckText:SetText("Healer") end
   if MyLFGDps1CheckText then MyLFGDps1CheckText:SetText("DPS 1") end
   if MyLFGDps2CheckText then MyLFGDps2CheckText:SetText("DPS 2") end
   if MyLFGDps3CheckText then MyLFGDps3CheckText:SetText("DPS 3") end
 
+  -- Pulsanti principali
   MyLFGStartButton:SetScript("OnClick", MyLFG_Toggle)
   MyLFGAnnounceButton:SetScript("OnClick", MyLFG_SendAnnouncement)
 
-  -- hide unused buttons if present
-  if MyLFGLeftButton then MyLFGLeftButton:Hide() end
-  if MyLFGRightButton then MyLFGRightButton:Hide() end
-
+  -- Comando slash
   SLASH_MYLFG1 = "/mylfg"
   SlashCmdList["MYLFG"] = function()
     if MyLFGFrame:IsShown() then
@@ -111,16 +90,67 @@ function MyLFG_InitUI()
       MyLFGFrame:Show()
     end
   end
+end
 
-  -- cleanup dynamic frames on show
-  MyLFGFrame:SetScript("OnShow", function()
-    if MyLFG.dynamicFrames then
-      for _, f in ipairs(MyLFG.dynamicFrames) do
-        if f and f.Hide then f:Hide() end
-      end
-      MyLFG.dynamicFrames = {}
+function MyLFG_ChannelDropdown_Initialize()
+  local channels = {}
+  for i = 1, 10 do
+    local id, name = GetChannelName(i)
+    if id and id > 0 and name then
+      table.insert(channels, { text = name, value = name })
     end
-  end)
+  end
+
+  for _, channel in ipairs(channels) do
+    local info = UIDropDownMenu_CreateInfo()
+    info.text = channel.text
+    info.value = channel.value
+    info.func = function()
+      MyLFG.channel = channel.value
+      MyLFG.selectedChannel = channel.value
+    end
+    UIDropDownMenu_AddButton(info)
+  end
+end
+
+function MyLFG_PrefixDropdown_Initialize()
+  local options = {
+    { text = "-->", value = "-->" },
+    { text = ">>>", value = ">>>" },
+    { text = "==>", value = "==>" },
+    { text = "[[", value = "[[" },
+    { text = "«", value = "«" }
+  }
+
+  for _, option in ipairs(options) do
+    local info = UIDropDownMenu_CreateInfo()
+    info.text = option.text
+    info.value = option.value
+    info.func = function()
+      MyLFG.prefix = option.value
+    end
+    UIDropDownMenu_AddButton(info)
+  end
+end
+
+function MyLFG_SuffixDropdown_Initialize()
+  local options = {
+    { text = "<--", value = "<--" },
+    { text = "<<<", value = "<<<" },
+    { text = "<==", value = "<==" },
+    { text = "]]", value = "]]" },
+    { text = "»", value = "»" }
+  }
+
+  for _, option in ipairs(options) do
+    local info = UIDropDownMenu_CreateInfo()
+    info.text = option.text
+    info.value = option.value
+    info.func = function()
+      MyLFG.suffix = option.value
+    end
+    UIDropDownMenu_AddButton(info)
+  end
 end
 
 function MyLFG_OnEvent(self, event, ...)
@@ -179,59 +209,6 @@ function MyLFG_ChannelDropdown_OnClick(self)
   end
   MyLFG.channel = self.value
   MyLFG.selectedChannel = self.value
-end
-
-function MyLFG_ChannelDropdown_Initialize()
-  for i = 1, 10 do
-    local id, name = GetChannelName(i)
-    if id and id > 0 and name then
-      local info = UIDropDownMenu_CreateInfo()
-      info.text = name
-      info.value = name
-      info.func = MyLFG_ChannelDropdown_OnClick
-      UIDropDownMenu_AddButton(info)
-    end
-  end
-end
-
-function MyLFG_PrefixDropdown_OnClick(self)
-  if not self then return end
-  UIDropDownMenu_SetSelectedName(MyLFGPrefixDropdown, self.value)
-  if UIDropDownMenu_SetText then
-    UIDropDownMenu_SetText(MyLFGPrefixDropdown, self.value)
-  end
-  MyLFG.prefix = self.value
-end
-
-function MyLFG_PrefixDropdown_Initialize()
-  local options = {"-->", ">>>", "==>", "[[", "«"}
-  for i, opt in ipairs(options) do
-    local info = UIDropDownMenu_CreateInfo()
-    info.text = opt
-    info.value = opt
-    info.func = MyLFG_PrefixDropdown_OnClick
-    UIDropDownMenu_AddButton(info)
-  end
-end
-
-function MyLFG_SuffixDropdown_OnClick(self)
-  if not self then return end
-  UIDropDownMenu_SetSelectedName(MyLFGSuffixDropdown, self.value)
-  if UIDropDownMenu_SetText then
-    UIDropDownMenu_SetText(MyLFGSuffixDropdown, self.value)
-  end
-  MyLFG.suffix = self.value
-end
-
-function MyLFG_SuffixDropdown_Initialize()
-  local options = {"<--", "<<<", "<==", "]]", "»"}
-  for i, opt in ipairs(options) do
-    local info = UIDropDownMenu_CreateInfo()
-    info.text = opt
-    info.value = opt
-    info.func = MyLFG_SuffixDropdown_OnClick
-    UIDropDownMenu_AddButton(info)
-  end
 end
 
 local function GetNeeds()
