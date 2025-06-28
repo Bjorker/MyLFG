@@ -26,6 +26,20 @@
       <Frame name="MyLFGChannelDropdown" inherits="UIDropDownMenuTemplate">
         <Anchors><Anchor point="TOP" relativeTo="MyLFGIntervalSlider" relativePoint="BOTTOM" x="-10" y="-30"/></Anchors>
       </Frame>
+      <Frame name="MyLFGArrowFrame">
+        <Size><AbsDimension x="40" y="20"/></Size>
+        <Anchors><Anchor point="LEFT" relativeTo="MyLFGChannelDropdown" relativePoint="RIGHT" x="5" y="0"/></Anchors>
+        <Frames>
+          <Button name="MyLFGLeftButton" inherits="UIPanelButtonTemplate" text="←">
+            <Size><AbsDimension x="18" y="18"/></Size>
+            <Anchors><Anchor point="LEFT"/></Anchors>
+          </Button>
+          <Button name="MyLFGRightButton" inherits="UIPanelButtonTemplate" text="→">
+            <Size><AbsDimension x="18" y="18"/></Size>
+            <Anchors><Anchor point="RIGHT"/></Anchors>
+          </Button>
+        </Frames>
+      </Frame>
       <Frame name="MyLFGPrefixDropdown" inherits="UIDropDownMenuTemplate">
         <Anchors><Anchor point="TOP" relativeTo="MyLFGChannelDropdown" relativePoint="BOTTOM" x="0" y="-20"/></Anchors>
       </Frame>
@@ -59,11 +73,11 @@
       </CheckButton>
       <Button name="MyLFGStartButton" inherits="UIPanelButtonTemplate" text="Start">
         <Size><AbsDimension x="80" y="22"/></Size>
-        <Anchors><Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent" x="20" y="20"/></Anchors>
+        <Anchors><Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="-60" y="20"/></Anchors>
       </Button>
       <Button name="MyLFGAnnounceButton" inherits="UIPanelButtonTemplate" text="Announce Now">
         <Size><AbsDimension x="110" y="22"/></Size>
-        <Anchors><Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent" x="-20" y="20"/></Anchors>
+        <Anchors><Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="60" y="20"/></Anchors>
       </Button>
       <Button name="MyLFGCloseButton" inherits="UIPanelCloseButton">
         <Anchors>

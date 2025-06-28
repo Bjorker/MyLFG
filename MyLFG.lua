@@ -16,6 +16,7 @@ function MyLFG_OnLoad()
   MyLFG.suffix = "<--"
   MyLFG.interval = 5
   MyLFG.channel = "world"
+  MyLFG.selectedChannel = MyLFG.channel
   MyLFG.isActive = false
   MyLFG.timer = 0
 
@@ -35,6 +36,20 @@ function MyLFG_OnLoad()
 
   MyLFGMessageBox:SetText("DM:W")
 
+  -- anchor dropdowns below the input box
+  MyLFGChannelDropdown:ClearAllPoints()
+  MyLFGChannelDropdown:SetPoint("TOP", MyLFGMessageBox, "BOTTOM", 0, -10)
+  MyLFGPrefixDropdown:ClearAllPoints()
+  MyLFGPrefixDropdown:SetPoint("TOP", MyLFGChannelDropdown, "BOTTOM", 0, -10)
+  MyLFGSuffixDropdown:ClearAllPoints()
+  MyLFGSuffixDropdown:SetPoint("TOP", MyLFGPrefixDropdown, "BOTTOM", 0, -10)
+
+  -- center main buttons
+  MyLFGStartButton:ClearAllPoints()
+  MyLFGStartButton:SetPoint("BOTTOM", MyLFGFrame, "BOTTOM", -60, 20)
+  MyLFGAnnounceButton:ClearAllPoints()
+  MyLFGAnnounceButton:SetPoint("BOTTOM", MyLFGFrame, "BOTTOM", 60, 20)
+
   MyLFGIntervalSlider:SetMinMaxValues(1, 30)
   MyLFGIntervalSlider:SetValueStep(1)
   MyLFGIntervalSlider:SetValue(MyLFG.interval)
@@ -44,7 +59,7 @@ function MyLFG_OnLoad()
   end)
 
   UIDropDownMenu_Initialize(MyLFGChannelDropdown, MyLFG_ChannelDropdown_Initialize)
-  UIDropDownMenu_SetSelectedID(MyLFGChannelDropdown, 1)
+  UIDropDownMenu_SetSelectedName(MyLFGChannelDropdown, MyLFG.selectedChannel)
 
   UIDropDownMenu_Initialize(MyLFGPrefixDropdown, MyLFG_PrefixDropdown_Initialize)
   UIDropDownMenu_SetSelectedID(MyLFGPrefixDropdown, 1)
@@ -69,6 +84,10 @@ function MyLFG_OnLoad()
   MyLFGStartButton:SetScript("OnClick", MyLFG_Toggle)
   MyLFGAnnounceButton:SetScript("OnClick", MyLFG_SendAnnouncement)
 
+  -- hide unused buttons if present
+  if MyLFGLeftButton then MyLFGLeftButton:Hide() end
+  if MyLFGRightButton then MyLFGRightButton:Hide() end
+
   SLASH_MYLFG1 = "/mylfg"
   SlashCmdList["MYLFG"] = function()
     if MyLFGFrame:IsShown() then
@@ -77,6 +96,16 @@ function MyLFG_OnLoad()
       MyLFGFrame:Show()
     end
   end
+
+  -- cleanup dynamic frames on show
+  MyLFGFrame:SetScript("OnShow", function()
+    if MyLFG.dynamicFrames then
+      for _, f in ipairs(MyLFG.dynamicFrames) do
+        if f and f.Hide then f:Hide() end
+      end
+      MyLFG.dynamicFrames = {}
+    end
+  end)
 end
 
 function MyLFG_UpdateButton()
@@ -122,8 +151,9 @@ end
 
 function MyLFG_ChannelDropdown_OnClick(self)
   if not self then return end
-  UIDropDownMenu_SetSelectedID(MyLFGChannelDropdown, self:GetID())
+  UIDropDownMenu_SetSelectedName(MyLFGChannelDropdown, self.value)
   MyLFG.channel = self.value
+  MyLFG.selectedChannel = self.value
 end
 
 function MyLFG_ChannelDropdown_Initialize()
@@ -141,7 +171,7 @@ end
 
 function MyLFG_PrefixDropdown_OnClick(self)
   if not self then return end
-  UIDropDownMenu_SetSelectedID(MyLFGPrefixDropdown, self:GetID())
+  UIDropDownMenu_SetSelectedName(MyLFGPrefixDropdown, self.value)
   MyLFG.prefix = self.value
 end
 
@@ -158,7 +188,7 @@ end
 
 function MyLFG_SuffixDropdown_OnClick(self)
   if not self then return end
-  UIDropDownMenu_SetSelectedID(MyLFGSuffixDropdown, self:GetID())
+  UIDropDownMenu_SetSelectedName(MyLFGSuffixDropdown, self.value)
   MyLFG.suffix = self.value
 end
 
