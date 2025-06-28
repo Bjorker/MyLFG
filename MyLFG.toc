@@ -1,0 +1,6 @@
+## Interface: 11200
+## Title: MyLFG
+## Notes: Auto LFG announcer with group-aware messages
+## Author: Signor CodeMaster
+MyLFG.lua
+MyLFG.xml
