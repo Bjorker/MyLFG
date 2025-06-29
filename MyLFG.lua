@@ -55,7 +55,7 @@ function MyLFG_SetupChannelDropDown()
     dropDown.owner = dropDown
     UIDropDownMenu_Initialize(dropDown, function()
         local list = {GetChannelList()}
-        for i = 1, #list, 2 do
+        for i = 1, table.getn(list), 2 do
             local id = list[i]
             local name = list[i + 1]
             if id and name then
