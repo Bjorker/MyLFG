@@ -1,3 +1,5 @@
+print("MyLFG loaded")
+
 local PREFIX_OPTIONS = {"LFM", "LF1M", "LFG"}
 local SUFFIX_OPTIONS = {"pst", "/w me", "need all"}
 
