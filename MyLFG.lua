@@ -2,6 +2,7 @@ local PREFIX_OPTIONS = {"LFM", "LF1M", "LFG"}
 local SUFFIX_OPTIONS = {"pst", "/w me", "need all"}
 
 function MyLFG_OnLoad(self)
+    print("MyLFG Loaded")
     -- Initialize checkboxes to checked
     self.Tank:SetChecked(true)
     self.Healer:SetChecked(true)
