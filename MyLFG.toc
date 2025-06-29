@@ -3,5 +3,5 @@
 ## Author: Codex
 ## Version: 1.0
 ## Notes: Simple LFG broadcasting tool.
-MyLFG.xml
 MyLFG.lua
+MyLFG.xml
