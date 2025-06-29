@@ -1,0 +1,93 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\\FrameXML\\UI.xsd">
+  <Frame name="MyLFGFrame" parent="UIParent" movable="true" enableMouse="true" toplevel="true" hidden="false">
+    <Size>
+      <AbsDimension x="300" y="240"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Backdrop bgFile="Interface\\DialogFrame\\UI-DialogBox-Background" edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border" tile="true" tileSize="32" edgeSize="32" insets="5,5,5,5"/>
+    <TitleRegion>
+      <Size>
+        <AbsDimension x="280" y="24"/>
+      </Size>
+    </TitleRegion>
+    <Scripts>
+      <OnLoad>MyLFG_OnLoad(self);</OnLoad>
+    </Scripts>
+
+    <!-- Tank checkbox -->
+    <CheckButton name="$parentTank" inherits="UICheckButtonTemplate">
+      <Size><AbsDimension x="24" y="24"/></Size>
+      <Anchors><Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="20" y="-40"/></Anchors>
+      <Scripts>
+        <OnLoad>_G[self:GetName().."Text"]:SetText("Tank");</OnLoad>
+      </Scripts>
+    </CheckButton>
+
+    <!-- Healer checkbox -->
+    <CheckButton name="$parentHealer" inherits="UICheckButtonTemplate">
+      <Size><AbsDimension x="24" y="24"/></Size>
+      <Anchors><Anchor point="TOPLEFT" relativeTo="$parentTank" relativePoint="BOTTOMLEFT" x="0" y="-10"/></Anchors>
+      <Scripts>
+        <OnLoad>_G[self:GetName().."Text"]:SetText("Healer");</OnLoad>
+      </Scripts>
+    </CheckButton>
+
+    <!-- DPS1 checkbox -->
+    <CheckButton name="$parentDPS1" inherits="UICheckButtonTemplate">
+      <Size><AbsDimension x="24" y="24"/></Size>
+      <Anchors><Anchor point="TOPLEFT" relativeTo="$parentHealer" relativePoint="BOTTOMLEFT" x="0" y="-10"/></Anchors>
+      <Scripts>
+        <OnLoad>_G[self:GetName().."Text"]:SetText("DPS 1");</OnLoad>
+      </Scripts>
+    </CheckButton>
+
+    <!-- DPS2 checkbox -->
+    <CheckButton name="$parentDPS2" inherits="UICheckButtonTemplate">
+      <Size><AbsDimension x="24" y="24"/></Size>
+      <Anchors><Anchor point="TOPLEFT" relativeTo="$parentDPS1" relativePoint="BOTTOMLEFT" x="0" y="-10"/></Anchors>
+      <Scripts>
+        <OnLoad>_G[self:GetName().."Text"]:SetText("DPS 2");</OnLoad>
+      </Scripts>
+    </CheckButton>
+
+    <!-- DPS3 checkbox -->
+    <CheckButton name="$parentDPS3" inherits="UICheckButtonTemplate">
+      <Size><AbsDimension x="24" y="24"/></Size>
+      <Anchors><Anchor point="TOPLEFT" relativeTo="$parentDPS2" relativePoint="BOTTOMLEFT" x="0" y="-10"/></Anchors>
+      <Scripts>
+        <OnLoad>_G[self:GetName().."Text"]:SetText("DPS 3");</OnLoad>
+      </Scripts>
+    </CheckButton>
+
+    <!-- Edit box for base message -->
+    <EditBox name="$parentMessageBox" inherits="InputBoxTemplate" letters="255">
+      <Size><AbsDimension x="260" y="25"/></Size>
+      <Anchors><Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="-30"/></Anchors>
+    </EditBox>
+
+    <!-- Prefix drop-down -->
+    <Frame name="$parentPrefixDropDown" inherits="UIDropDownMenuTemplate">
+      <Anchors><Anchor point="TOPLEFT" relativeTo="$parentDPS3" relativePoint="BOTTOMLEFT" x="-15" y="-20"/></Anchors>
+    </Frame>
+
+    <!-- Suffix drop-down -->
+    <Frame name="$parentSuffixDropDown" inherits="UIDropDownMenuTemplate">
+      <Anchors><Anchor point="TOPLEFT" relativeTo="$parentPrefixDropDown" relativePoint="BOTTOMLEFT" x="0" y="-10"/></Anchors>
+    </Frame>
+
+    <!-- Channel drop-down -->
+    <Frame name="$parentChannelDropDown" inherits="UIDropDownMenuTemplate">
+      <Anchors><Anchor point="TOPLEFT" relativeTo="$parentSuffixDropDown" relativePoint="BOTTOMLEFT" x="0" y="-10"/></Anchors>
+    </Frame>
+
+    <!-- Announce Now button -->
+    <Button name="$parentAnnounceButton" inherits="UIPanelButtonTemplate">
+      <Size><AbsDimension x="120" y="24"/></Size>
+      <Anchors><Anchor point="TOP" relativeTo="$parentChannelDropDown" relativePoint="BOTTOM" x="0" y="-20"/></Anchors>
+      <Text>Announce Now</Text>
+      <Scripts><OnClick>MyLFG_Announce();</OnClick></Scripts>
+    </Button>
+  </Frame>
+</Ui>
